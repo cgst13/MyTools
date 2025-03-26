@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-Registered List</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: url('https://imageio.forbes.com/specials-images/imageserve/5f204a637d13bde0059894af/Naveego/960x0.jpg?format=jpg&width=1440') no-repeat center center fixed; background-size: cover; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; backdrop-filter: blur(5px); }
+        .container { width: 90%; max-width: 900px; background: rgba(255, 255, 255, 0.9); padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); text-align: center; }
+        h2 { color: #333; }
+        .search-container { display: flex; justify-content: center; align-items: center; gap: 5px; margin-bottom: 10px; }
+        .search-box { padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 60%; }
+        .btn { padding: 8px 12px; border: none; cursor: pointer; border-radius: 4px; color: white; font-weight: bold; }
+        .btn-search { background: #007bff; }
+        .btn-summary { background: #28a745; }
+        .btn:hover { opacity: 0.8; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
+        th { background: #007bff; color: white; }
+        .btn-queue { background: #ff9800; color: white; padding: 6px 10px; border: none; cursor: pointer; border-radius: 4px; }
+        .pagination { margin-top: 10px; display: flex; justify-content: center; gap: 5px; }
+        .page-btn { padding: 5px 10px; border: 1px solid #007bff; background: #007bff; color: white; cursor: pointer; border-radius: 4px; }
+        .page-btn:hover, .page-btn.active { background: #0056b3; font-weight: bold; }
+        .overlay, .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border-radius: 8px; z-index: 1000; text-align: center; width: 300px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Pre-Registered Individuals</h2>
+        <div class="search-container">
+            <input type="text" id="search" class="search-box" placeholder="Search by name..." onkeyup="searchTable()">
+            <button class="btn btn-search">Search</button>
+            <button class="btn btn-summary" onclick="openSummaryModal()">Summary</button>
+        </div>
+        <table id="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th> <th>Full Name</th> <th>Sex</th> <th>Address</th> <th>Birthdate</th> <th>Age</th> <th>Category</th> <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <div class="pagination" id="pagination"></div>
+    </div>
+
+    <!-- Queue Modal -->
+    <div class="overlay" id="queue-overlay"></div>
+    <div class="modal" id="queue-modal">
+        <h3>Queue Information</h3>
+        <p><strong>Name:</strong> <span id="queue-name"></span></p>
+        <p><strong>Category:</strong> <span id="queue-category"></span></p>
+        <button onclick="closeQueueModal()">Close</button>
+    </div>
+
+    <!-- Summary Modal -->
+    <div class="overlay" id="summary-overlay"></div>
+    <div class="modal" id="summary-modal">
+        <h3>Category Summary</h3>
+        <table><thead><tr><th>Category</th><th>Count</th></tr></thead>
+        <tbody id="summary-body"></tbody></table>
+        <button onclick="closeSummaryModal()">Close</button>
+    </div>
+
+    <script>
+        let data = [], currentPage = 1, rowsPerPage = 10;
+        document.addEventListener("DOMContentLoaded", () => {
+            fetch(`https://sheets.googleapis.com/v4/spreadsheets/1SRV82Z_b5kJAk_FkHVwGzghmWh7QTTISE1GXzvHKDKo/values/PreRegistered!A2:G?key=AIzaSyD4ce00iXYHsqJaJDzNcMMw0L9CCViIRBg`)
+                .then(response => response.json())
+                .then(sheetData => {
+                    if (sheetData.values) {
+                        data = sheetData.values.map(row => ({
+                            id: row[0], fullName: row[1], sex: row[2], address: row[3], birthdate: row[4], age: row[5], category: row[6]
+                        }));
+                        displayTable();
+                        updateSummary();
+                    }
+                });
+        });
+
+        function displayTable() {
+            let tableBody = document.querySelector("#data-table tbody");
+            tableBody.innerHTML = "";
+            let start = (currentPage - 1) * rowsPerPage;
+            let paginatedData = data.slice(start, start + rowsPerPage);
+
+            paginatedData.forEach(row => {
+                tableBody.innerHTML += `<tr><td>${row.id}</td><td>${row.fullName}</td><td>${row.sex}</td><td>${row.address}</td><td>${row.birthdate}</td><td>${row.age}</td><td>${row.category}</td><td><button class="btn-queue" onclick="openQueueModal('${row.fullName}', '${row.category}')">Add to Queue</button></td></tr>`;
+            });
+            updatePagination();
+        }
+
+        function updatePagination() {
+            let paginationDiv = document.getElementById("pagination");
+            paginationDiv.innerHTML = "";
+            let totalPages = Math.ceil(data.length / rowsPerPage);
+            for (let i = 1; i <= totalPages; i++) {
+                paginationDiv.innerHTML += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+            }
+        }
+
+        function changePage(page) { currentPage = page; displayTable(); }
+        function searchTable() { let searchText = document.getElementById("search").value.toLowerCase(); data = data.filter(row => row.fullName.toLowerCase().includes(searchText)); currentPage = 1; displayTable(); }
+        function updateSummary() { let summary = {}; data.forEach(row => { summary[row.category] = (summary[row.category] || 0) + 1; }); document.getElementById("summary-body").innerHTML = Object.entries(summary).map(([category, count]) => `<tr><td>${category}</td><td>${count}</td></tr>`).join(""); }
+        function openSummaryModal() { document.getElementById("summary-modal").style.display = "block"; }
+        function closeSummaryModal() { document.getElementById("summary-modal").style.display = "none"; }
+        function openQueueModal(name, category) { document.getElementById("queue-name").innerText = name; document.getElementById("queue-category").innerText = category; document.getElementById("queue-modal").style.display = "block"; }
+        function closeQueueModal() { document.getElementById("queue-modal").style.display = "none"; }
+    </script>
+</body>
+</html>

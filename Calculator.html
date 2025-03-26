@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Property Tax Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #eef2f7; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: auto; max-width: 90vw; }
+        h2, h3 { text-align: center; color: #333; margin-bottom: 10px; }
+        h3 { color: #555; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { font-weight: bold; display: block; margin-bottom: 5px; color: #444; }
+        input { width: calc(100% - 16px); padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+        .row { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+        .row .form-group { flex: 1; min-width: 250px; }
+        .billing-section { margin-top: 20px; display: inline-block; width: 100%; }
+        .billing-table { width: 100%; max-width: 100%; border-collapse: collapse; background: #f8f9fa; table-layout: auto; }
+        .billing-table th, .billing-table td { border: 1px solid #ddd; padding: 8px; text-align: center; white-space: nowrap; min-width: 120px; }
+        .billing-table th { background: #004d80; color: white; }
+        .billing-table input { width: 100%; box-sizing: border-box; padding: 5px; border: 1px solid #ccc; border-radius: 4px; }
+        .add-bill-btn, .remove-bill-btn { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+        .add-bill-btn { background: #004d80; color: white; }
+        .remove-bill-btn { background: red; color: white; }
+    </style>
+    <script>
+        function insertRow() {
+            let table = document.querySelector(".billing-table");
+            let rows = table.rows.length;
+            let lastRow = table.rows[rows - 1];
+            lastRow.cells[6].innerHTML = "<button class='remove-bill-btn' onclick='removeRow(this)'>Remove</button>";
+
+            let newRow = table.insertRow(-1);
+            for (let i = 0; i < 6; i++) {
+                let cell = newRow.insertCell(i);
+                let input = document.createElement("input");
+                input.type = "number";
+                if (i === 1) input.disabled = true;
+                if (i < 2) input.placeholder = "YYYY";
+                else input.placeholder = "Enter value";
+                cell.appendChild(input);
+            }
+            let actionCell = newRow.insertCell(6);
+            actionCell.innerHTML = "<button class='remove-bill-btn' onclick='removeRow(this)'>Remove</button> <button class='add-bill-btn' onclick='insertRow()'>Insert</button>";
+        }
+
+        function removeRow(button) {
+            let row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            let table = document.querySelector(".billing-table");
+            if (table.rows.length > 2) {
+                let lastRow = table.rows[table.rows.length - 1];
+                lastRow.cells[6].innerHTML = "<button class='remove-bill-btn' onclick='removeRow(this)'>Remove</button> <button class='add-bill-btn' onclick='insertRow()'>Insert</button>";
+            }
+        }
+
+        function setCurrentMonth() {
+            let monthInput = document.getElementById("month");
+            let date = new Date();
+            monthInput.value = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+        }
+
+
+
+
+
+        window.onload = setCurrentMonth;
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Real Property Tax Calculator</h2>
+        <h3>Customer Details</h3>
+        <div class="row">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" placeholder="Enter your name">
+            </div>
+            <div class="form-group">
+                <label for="td">TD #:</label>
+                <input type="text" id="td" placeholder="Enter TD number">
+            </div>
+            <div class="form-group">
+                <label for="address">Address:</label>
+                <input type="text" id="address" placeholder="Enter address">
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <label for="assessedValue">Assessed Value:</label>
+                <input type="number" id="assessedValue" placeholder="Enter assessed value">
+            </div>
+            <div class="form-group">
+                <label for="parcels">No. of Parcels:</label>
+                <input type="number" id="parcels" placeholder="Enter number of parcels">
+            </div>
+            <div class="form-group">
+                <label for="month">Current Month:</label>
+                <input type="text" id="month" readonly>
+            </div>
+        </div>
+        <div class="billing-section">
+            <h3>Billing Details</h3>
+            <table class="billing-table">
+                <tr>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Tax Due</th>
+                    <th>Full Payment</th>
+                    <th>Penalty Per Cent</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+                <tr>
+                    <td><input type="number" placeholder="YYYY" min="1900" max="2100"></td>
+                    <td><input type="number" placeholder="YYYY" min="1900" max="2100"></td>
+                    <td><input type="number" placeholder="Enter tax due"></td>
+                    <td><input type="number" placeholder="Enter full payment"></td>
+                    <td><input type="number" placeholder="Enter penalty %"></td>
+                    <td><input type="number" placeholder="Total"></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><input type="number" placeholder="YYYY" min="1900" max="2100"></td>
+                    <td><input type="number" placeholder="YYYY" min="1900" max="2100" disabled></td>
+                    <td><input type="number" placeholder="Enter tax due"></td>
+                    <td><input type="number" placeholder="Enter full payment"></td>
+                    <td><input type="number" placeholder="Enter penalty %"></td>
+                    <td><input type="number" placeholder="Total"></td>
+                    <td><button class='add-bill-btn' onclick='insertRow()'>Insert</button></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
