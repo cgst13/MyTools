@@ -1,0 +1,28 @@
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }  
+body { background: #eef2f7; padding: 20px; text-align: center; }  
+.container { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 900px; margin: auto; }  
+h2, h3 { color: #333; margin-bottom: 10px; }  
+.form-group { margin-bottom: 15px; width: 100%; }  
+label { font-weight: bold; display: block; margin-bottom: 5px; }  
+input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }  
+.row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; }  
+.row .form-group { flex: 1; min-width: 250px; }  
+.billing-section { margin-top: 20px; }  
+.billing-table { width: 100%; border-collapse: collapse; background: #f8f9fa; table-layout: auto; }  
+.billing-table th, .billing-table td { border: 1px solid #ddd; padding: 6px; text-align: center; white-space: nowrap; }  
+.billing-table input { width: 100%; padding: 5px; text-align: center; }  
+.billing-table td:last-child { width: 1%; white-space: nowrap; }  
+.billing-table button { padding: 6px 10px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }  
+.add-bill-btn { background: #004d80; color: white; }  
+.remove-bill-btn { background: red; color: white; }  
+.summary { margin-top: 10px; padding: 10px; background: #f4f4f4; border-radius: 8px; display: flex; justify-content: center; }  
+.summary table { width: 100%; }  
+.summary td { padding: 5px 10px; font-size: 14px; white-space: nowrap; }  
+.summary span { font-weight: bold; color: #004d80; }  
+.bills-container { position: absolute; left: 20px; top: 50px; width: 300px; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: left; max-height: 500px; overflow-y: auto; }  
+.bill-entry { background: #f8f9fa; padding: 10px; border-radius: 8px; margin-bottom: 10px; font-size: 14px; }  
+.bill-entry p { margin: 5px 0; }  
+.remove-bill-btn2 { background: red; color: white; }
+.remove-bill-btn { background: red; color: white; padding: 5px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; width: 100%; }  
+#addBillBtn { background: green; color: white; padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; margin-top: 10px; width: 100%; }  
+ 
